@@ -34,6 +34,17 @@ export class Book extends Entity {
   })
   publishDate: string;
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  authorId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  categoryId: string;
 
   constructor(data?: Partial<Book>) {
     super(data);
