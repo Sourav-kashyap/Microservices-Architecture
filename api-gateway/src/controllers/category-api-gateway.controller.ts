@@ -23,4 +23,28 @@ export class CategoryApiGatewayController {
       throw new Error('Failed to create category');
     }
   }
+
+  @get('/categories')
+  async getAllCategories() {
+    try {
+      const response = await axios.get(`${this.categoryBaseURL}/categories`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching categories:', error.message);
+      throw new Error('Failed to retrieve categories');
+    }
+  }
+
+  @get('/categories/{id}')
+  async getCategoryById(@param.path.string('id') id: string) {
+    try {
+      const response = await axios.get(
+        `${this.categoryBaseURL}/categories/${id}`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching category:', error.message);
+      throw new Error('Failed to retrieve category');
+    }
+  }
 }

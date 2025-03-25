@@ -22,4 +22,26 @@ export class AuthorApiGatewayController {
       throw new Error('Failed to create author');
     }
   }
+
+  @get('/authors')
+  async getAllAuthors() {
+    try {
+      const response = await axios.get(`${this.authorBaseURL}/authors`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching authors:', error.message);
+      throw new Error('Failed to retrieve authors');
+    }
+  }
+
+  @get('/authors/{id}')
+  async getAuthorById(@param.path.string('id') id: string) {
+    try {
+      const response = await axios.get(`${this.authorBaseURL}/authors/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching author:', error.message);
+      throw new Error('Failed to retrieve author');
+    }
+  }
 }
