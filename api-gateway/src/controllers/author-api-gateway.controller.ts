@@ -24,7 +24,7 @@ export class AuthorApiGatewayController {
   }
 
   @get('/authors')
-  async getAllAuthors() {
+  async getAllAuthors(): Promise<IAuthor> {
     try {
       const response = await axios.get(`${this.authorBaseURL}/authors`);
       return response.data;
@@ -35,13 +35,26 @@ export class AuthorApiGatewayController {
   }
 
   @get('/authors/{id}')
-  async getAuthorById(@param.path.string('id') id: string) {
+  async getAuthorById(@param.path.string('id') id: string): Promise<IAuthor> {
     try {
       const response = await axios.get(`${this.authorBaseURL}/authors/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching author:', error.message);
       throw new Error('Failed to retrieve author');
+    }
+  }
+
+  @del('/authors/{id}')
+  async deleteAuthor(@param.path.string('id') id: string): Promise<IAuthor> {
+    try {
+      const response = await axios.delete(
+        `${this.authorBaseURL}/authors/${id}`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Error deleting author with ID ${id}:`, error);
+      throw new Error(`Failed to delete author with ID ${id}`);
     }
   }
 }

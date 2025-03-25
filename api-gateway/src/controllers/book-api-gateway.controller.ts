@@ -108,4 +108,15 @@ export class BookApiGatewayController {
       throw new Error(`Failed to fetch book with ID ${id}`);
     }
   }
+
+  @del('/books/{id}')
+  async deleteBookById(@param.path.string('id') id: string): Promise<IBook> {
+    try {
+      const response = await axios.delete(`${this.bookBaseURL}/books/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error deleting book with ID ${id}:`, error);
+      throw new Error(`Failed to delete book with ID ${id}`);
+    }
+  }
 }
