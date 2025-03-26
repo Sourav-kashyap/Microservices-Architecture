@@ -46,6 +46,23 @@ export class AuthorApiGatewayController {
     }
   }
 
+  @patch('/authors/{id}')
+  async updateAuthor(
+    @param.path.string('id') id: string,
+    @requestBody() author: IAuthor,
+  ) {
+    try {
+      const response = await axios.patch(
+        `${this.authorBaseURL}/authors/${id}`,
+        author,
+      );
+
+      return response.data;
+    } catch (error) {
+      return `Failed to update author with id ${id}: ${error.message}`;
+    }
+  }
+
   @del('/authors/{id}')
   async deleteAuthor(
     @param.path.string('id') id: string,

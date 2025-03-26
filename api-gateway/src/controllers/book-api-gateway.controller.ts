@@ -120,6 +120,22 @@ export class BookApiGatewayController {
     }
   }
 
+  @patch('/books/{id}')
+  async updateBookById(
+    @param.path.string('id') id: string,
+    @requestBody() book: IBookView,
+  ) {
+    try {
+      const response = await axios.patch(
+        `${this.bookBaseURL}/books/${id}`,
+        book,
+      );
+      return response.data;
+    } catch (error) {
+      return `Failed to update book with ID ${id}: ${error.message}`;
+    }
+  }
+
   @del('/books/{id}')
   async deleteBookById(
     @param.path.string('id') id: string,

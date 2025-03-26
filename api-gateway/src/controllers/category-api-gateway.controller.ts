@@ -49,6 +49,22 @@ export class CategoryApiGatewayController {
     }
   }
 
+  @patch('/categories/{id}')
+  async updateCategory(
+    @param.path.string('id') id: string,
+    @requestBody() category: ICategory,
+  ): Promise<ICategory | string> {
+    try {
+      const response = await axios.patch(
+        `${this.categoryBaseURL}/categories/${id}`,
+        category,
+      );
+      return response.data;
+    } catch (error) {
+      return `Failed to update category with id ${id}: ${error.message}`;
+    }
+  }
+
   @del('/categories/{id}')
   async deleteCategory(
     @param.path.string('id') id: string,
