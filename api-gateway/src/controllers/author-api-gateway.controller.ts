@@ -10,7 +10,9 @@ export class AuthorApiGatewayController {
   /* Author End Points */
 
   @post('/authors')
-  async createAuthor(@requestBody() author: IAuthor): Promise<IAuthor> {
+  async createAuthor(
+    @requestBody() author: IAuthor,
+  ): Promise<IAuthor | string> {
     try {
       const response = await axios.post(
         `${this.authorBaseURL}/authors`,
@@ -18,43 +20,43 @@ export class AuthorApiGatewayController {
       );
       return response.data;
     } catch (error) {
-      console.error('Error creating author:', error);
-      throw new Error('Failed to create author');
+      return `Failed to create author: ${error.message}`;
     }
   }
 
   @get('/authors')
-  async getAllAuthors(): Promise<IAuthor> {
+  async getAllAuthors(): Promise<IAuthor | string> {
     try {
       const response = await axios.get(`${this.authorBaseURL}/authors`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching authors:', error.message);
-      throw new Error('Failed to retrieve authors');
+      return `Failed to get all authors: ${error.message}`;
     }
   }
 
   @get('/authors/{id}')
-  async getAuthorById(@param.path.string('id') id: string): Promise<IAuthor> {
+  async getAuthorById(
+    @param.path.string('id') id: string,
+  ): Promise<IAuthor | string> {
     try {
       const response = await axios.get(`${this.authorBaseURL}/authors/${id}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching author:', error.message);
-      throw new Error('Failed to retrieve author');
+      return `Failed to get author with id ${id}: ${error.message}`;
     }
   }
 
   @del('/authors/{id}')
-  async deleteAuthor(@param.path.string('id') id: string): Promise<IAuthor> {
+  async deleteAuthor(
+    @param.path.string('id') id: string,
+  ): Promise<IAuthor | string> {
     try {
       const response = await axios.delete(
         `${this.authorBaseURL}/authors/${id}`,
       );
       return response.data;
     } catch (error) {
-      console.error(`Error deleting author with ID ${id}:`, error);
-      throw new Error(`Failed to delete author with ID ${id}`);
+      return `Failed to delete author with id ${id}: ${error.message}`;
     }
   }
 }
