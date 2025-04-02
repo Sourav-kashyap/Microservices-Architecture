@@ -49,6 +49,8 @@
     "!*/__tests__"
   ],
   "dependencies": {
+    "@loopback/authentication": "^11.0.12",
+    "@loopback/authentication-jwt": "^0.15.12",
     "@loopback/boot": "^7.0.12",
     "@loopback/core": "^6.1.9",
     "@loopback/repository": "^7.0.12",
@@ -56,6 +58,7 @@
     "@loopback/rest-explorer": "^7.0.12",
     "@loopback/service-proxy": "^7.0.12",
     "dotenv": "^16.4.7",
+    "jsonwebtoken": "^9.0.2",
     "loopback-connector-mysql": "^7.1.0",
     "newrelic": "^12.16.1",
     "tslib": "^2.0.0"
