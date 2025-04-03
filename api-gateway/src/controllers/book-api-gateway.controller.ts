@@ -1,4 +1,4 @@
-import {get, post, patch, put, del, requestBody, param} from '@loopback/rest';
+import {get, post, patch, del, requestBody, param} from '@loopback/rest';
 import axios from 'axios';
 
 /* Book Interface */
