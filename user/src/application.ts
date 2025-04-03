@@ -9,6 +9,13 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
+import {
+  AuthenticationBindings,
+  AuthenticationComponent,
+  Strategies,
+} from 'loopback4-authentication';
+import {User} from './models';
+import {BearerTokenVerifyProvider} from './providers/bearer-token-verify.provider';
 
 export {ApplicationConfig};
 
@@ -17,6 +24,12 @@ export class UserApplication extends BootMixin(
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
+
+    this.bind(AuthenticationBindings.USER_MODEL).to(User as any);
+    this.component(AuthenticationComponent);
+    this.bind(Strategies.Passport.BEARER_TOKEN_VERIFIER).toProvider(
+      BearerTokenVerifyProvider,
+    );
 
     // Set up the custom sequence
     this.sequence(MySequence);
