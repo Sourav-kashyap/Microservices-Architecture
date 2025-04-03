@@ -4,6 +4,7 @@ import {UserRepository} from '../repositories/user.repository';
 import {User} from '../models/user.model';
 import {sign} from 'jsonwebtoken';
 import {HttpErrors} from '@loopback/rest';
+import {compare, hash} from 'bcrypt';
 export class AuthController {
   constructor(
     @repository(UserRepository)
@@ -20,6 +21,15 @@ export class AuthController {
 
     if (!user) {
       throw new HttpErrors.Unauthorized('Invalid credentials');
+    }
+
+    const isPasswordValid = await compare(
+      credentials.password,
+      user.password as string,
+    );
+
+    if (!isPasswordValid) {
+      throw new HttpErrors.Unauthorized('invalid username or passowrd');
     }
 
     const token = sign(
@@ -45,7 +55,11 @@ export class AuthController {
     if (existingUser) {
       throw new HttpErrors.Conflict('Username already exists');
     }
-    const user = await this.userRepository.create(userData);
+    const hashPassword = await hash(userData.password as string, 10);
+    const user = await this.userRepository.create({
+      ...userData,
+      password: hashPassword,
+    });
     const token = sign(
       {
         id: user.id,
