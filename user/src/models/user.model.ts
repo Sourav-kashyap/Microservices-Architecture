@@ -1,6 +1,8 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model()
+@model({
+  name: 'users',
+})
 export class User extends Entity {
   @property({
     type: 'string',
@@ -33,7 +35,6 @@ export class User extends Entity {
     required: true,
   })
   role: string;
-
 
   constructor(data?: Partial<User>) {
     super(data);
