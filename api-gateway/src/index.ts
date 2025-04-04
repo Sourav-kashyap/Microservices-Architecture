@@ -1,4 +1,5 @@
 import {ApplicationConfig, ApiGatewayApplication} from './application';
+require('dotenv').config();
 
 export * from './application';
 

@@ -1,3 +1,4 @@
+import 'newrelic';
 import {ApplicationConfig, BookServicesApplication} from './application';
 
 export * from './application';
