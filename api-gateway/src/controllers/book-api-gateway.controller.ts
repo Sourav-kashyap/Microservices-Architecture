@@ -4,6 +4,7 @@ import axios from 'axios';
 /* Book Interface */
 import {IBook} from '../interface/book-interface';
 import {IBookView} from '../interface/book-interface';
+import {authenticate, STRATEGY} from 'loopback4-authentication';
 
 export class BookApiGatewayController {
   private bookBaseURL = 'http://localhost:3001';
@@ -13,7 +14,7 @@ export class BookApiGatewayController {
   constructor() {}
 
   /* Book End Points */
-
+  @authenticate(STRATEGY.BEARER)
   @post('/books')
   async createBook(@requestBody() book: IBook): Promise<IBookView | string> {
     try {
@@ -120,6 +121,7 @@ export class BookApiGatewayController {
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @patch('/books/{id}')
   async updateBookById(
     @param.path.string('id') id: string,
@@ -136,6 +138,7 @@ export class BookApiGatewayController {
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @del('/books/{id}')
   async deleteBookById(
     @param.path.string('id') id: string,

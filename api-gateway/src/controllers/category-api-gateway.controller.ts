@@ -3,6 +3,7 @@ import axios from 'axios';
 
 /* Category interface */
 import {ICategory} from '../interface/category-interface';
+import {authenticate, STRATEGY} from 'loopback4-authentication';
 
 export class CategoryApiGatewayController {
   private categoryBaseURL = 'http://localhost:3003';
@@ -10,6 +11,7 @@ export class CategoryApiGatewayController {
 
   /* Category End Points */
 
+  @authenticate(STRATEGY.BEARER)
   @post('/categorys')
   async createCategory(
     @requestBody() category: ICategory,
@@ -49,6 +51,7 @@ export class CategoryApiGatewayController {
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @patch('/categories/{id}')
   async updateCategory(
     @param.path.string('id') id: string,
@@ -65,6 +68,7 @@ export class CategoryApiGatewayController {
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @del('/categories/{id}')
   async deleteCategory(
     @param.path.string('id') id: string,

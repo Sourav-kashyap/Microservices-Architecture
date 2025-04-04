@@ -2,6 +2,7 @@ import {get, post, patch, put, del, requestBody, param} from '@loopback/rest';
 import axios from 'axios';
 /* Author Interface */
 import {IAuthor} from '../interface/author-interface';
+import {authenticate, STRATEGY} from 'loopback4-authentication';
 
 export class AuthorApiGatewayController {
   private authorBaseURL = 'http://localhost:3002';
@@ -9,6 +10,7 @@ export class AuthorApiGatewayController {
 
   /* Author End Points */
 
+  @authenticate(STRATEGY.BEARER)
   @post('/authors')
   async createAuthor(
     @requestBody() author: IAuthor,
@@ -46,6 +48,7 @@ export class AuthorApiGatewayController {
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @patch('/authors/{id}')
   async updateAuthor(
     @param.path.string('id') id: string,
@@ -63,6 +66,7 @@ export class AuthorApiGatewayController {
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @del('/authors/{id}')
   async deleteAuthor(
     @param.path.string('id') id: string,

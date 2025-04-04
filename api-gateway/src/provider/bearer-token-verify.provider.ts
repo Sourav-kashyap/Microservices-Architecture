@@ -4,7 +4,7 @@ import {Provider} from '@loopback/core';
 import {HttpErrors} from '@loopback/rest';
 import jwt from 'jsonwebtoken';
 import {VerifyFunction} from 'loopback4-authentication';
-import {User} from '../models';
+import {Signup} from '../interface/user-interface';
 
 export class BearerTokenVerifyProvider
   implements Provider<VerifyFunction.BearerFn>
@@ -24,7 +24,7 @@ export class BearerTokenVerifyProvider
           issuer: process.env.JWT_ISSUER,
         });
 
-        const user = decoded as User;
+        const user = decoded as Signup;
 
         if (!user) {
           throw new HttpErrors.Unauthorized('Invalid Token');

@@ -1,9 +1,10 @@
 import {Entity, model, property} from '@loopback/repository';
+import {IAuthUser} from 'loopback4-authentication';
 
 @model({
   name: 'users',
 })
-export class User extends Entity {
+export class User extends Entity implements IAuthUser {
   @property({
     type: 'string',
     id: true,
