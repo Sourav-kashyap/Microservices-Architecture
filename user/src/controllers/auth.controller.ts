@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import {repository} from '@loopback/repository';
 import {post, requestBody} from '@loopback/rest';
 import {UserRepository} from '../repositories/user.repository';
@@ -12,7 +14,7 @@ export class AuthController {
     public userRepository: UserRepository,
   ) {}
 
-  // Login method w
+  // Login method
   @post('/login')
   async login(
     @requestBody() credentials: {username: string; password: string},
@@ -35,7 +37,6 @@ export class AuthController {
         throw new HttpErrors.Unauthorized('Invalid password');
       }
 
-      // Generate token
       const token = sign(
         {
           id: user.id,
@@ -45,7 +46,7 @@ export class AuthController {
         },
         process.env.JWT_SECRET as string,
         {
-          expiresIn: '1h',
+          expiresIn: '1d',
           issuer: process.env.JWT_ISSUER,
         },
       );
@@ -85,7 +86,7 @@ export class AuthController {
         },
         process.env.JWT_SECRET as string,
         {
-          expiresIn: '1h',
+          expiresIn: '1d',
           issuer: process.env.JWT_ISSUER,
         },
       );
@@ -94,7 +95,7 @@ export class AuthController {
     } catch (error) {
       console.error('Error during signup:', error.message);
       if (error instanceof HttpErrors.HttpError) {
-        throw error; // Re-throw known HTTP errors (e.g., Conflict, Unauthorized)
+        throw error;
       }
       throw new HttpErrors.InternalServerError('Signup failed');
     }

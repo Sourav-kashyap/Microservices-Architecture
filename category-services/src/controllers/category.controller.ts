@@ -16,6 +16,7 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
 import {Category} from '../models';
 import {CategoryRepository} from '../repositories';
@@ -23,7 +24,7 @@ import {CategoryRepository} from '../repositories';
 export class CategoryController {
   constructor(
     @repository(CategoryRepository)
-    public categoryRepository : CategoryRepository,
+    public categoryRepository: CategoryRepository,
   ) {}
 
   @post('/categories')
@@ -37,14 +38,19 @@ export class CategoryController {
         'application/json': {
           schema: getModelSchemaRef(Category, {
             title: 'NewCategory',
-            
           }),
         },
       },
     })
     category: Category,
   ): Promise<Category> {
-    return this.categoryRepository.create(category);
+    try {
+      return await this.categoryRepository.create(category);
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to create category: ' + error.message,
+      );
+    }
   }
 
   @get('/categories/count')
@@ -52,10 +58,14 @@ export class CategoryController {
     description: 'Category model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(Category) where?: Where<Category>,
-  ): Promise<Count> {
-    return this.categoryRepository.count(where);
+  async count(@param.where(Category) where?: Where<Category>): Promise<Count> {
+    try {
+      return await this.categoryRepository.count(where);
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to get category count: ' + error.message,
+      );
+    }
   }
 
   @get('/categories')
@@ -73,7 +83,17 @@ export class CategoryController {
   async find(
     @param.filter(Category) filter?: Filter<Category>,
   ): Promise<Category[]> {
-    return this.categoryRepository.find(filter);
+    try {
+      const categories = await this.categoryRepository.find(filter);
+      if (categories.length === 0) {
+        throw new HttpErrors.NotFound('No categories found.');
+      }
+      return categories;
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to fetch categories: ' + error.message,
+      );
+    }
   }
 
   @patch('/categories')
@@ -92,7 +112,13 @@ export class CategoryController {
     category: Category,
     @param.where(Category) where?: Where<Category>,
   ): Promise<Count> {
-    return this.categoryRepository.updateAll(category, where);
+    try {
+      return await this.categoryRepository.updateAll(category, where);
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to update categories: ' + error.message,
+      );
+    }
   }
 
   @get('/categories/{id}')
@@ -106,9 +132,23 @@ export class CategoryController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(Category, {exclude: 'where'}) filter?: FilterExcludingWhere<Category>
+    @param.filter(Category, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Category>,
   ): Promise<Category> {
-    return this.categoryRepository.findById(id, filter);
+    try {
+      const category = await this.categoryRepository.findById(id, filter);
+      if (!category) {
+        throw new HttpErrors.NotFound(`Category with ID ${id} not found.`);
+      }
+      return category;
+    } catch (error) {
+      if (error instanceof HttpErrors.NotFound) {
+        throw error; // propagate "not found" error
+      }
+      throw new HttpErrors.InternalServerError(
+        'Failed to find the category: ' + error.message,
+      );
+    }
   }
 
   @patch('/categories/{id}')
@@ -126,7 +166,16 @@ export class CategoryController {
     })
     category: Category,
   ): Promise<void> {
-    await this.categoryRepository.updateById(id, category);
+    try {
+      await this.categoryRepository.updateById(id, category);
+    } catch (error) {
+      if (error.name === 'EntityNotFoundError') {
+        throw new HttpErrors.NotFound(`Category with ID ${id} not found.`);
+      }
+      throw new HttpErrors.InternalServerError(
+        'Failed to update category: ' + error.message,
+      );
+    }
   }
 
   @put('/categories/{id}')
@@ -137,7 +186,16 @@ export class CategoryController {
     @param.path.string('id') id: string,
     @requestBody() category: Category,
   ): Promise<void> {
-    await this.categoryRepository.replaceById(id, category);
+    try {
+      await this.categoryRepository.replaceById(id, category);
+    } catch (error) {
+      if (error.name === 'EntityNotFoundError') {
+        throw new HttpErrors.NotFound(`Category with ID ${id} not found.`);
+      }
+      throw new HttpErrors.InternalServerError(
+        'Failed to replace category: ' + error.message,
+      );
+    }
   }
 
   @del('/categories/{id}')
@@ -145,6 +203,15 @@ export class CategoryController {
     description: 'Category DELETE success',
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.categoryRepository.deleteById(id);
+    try {
+      await this.categoryRepository.deleteById(id);
+    } catch (error) {
+      if (error.name === 'EntityNotFoundError') {
+        throw new HttpErrors.NotFound(`Category with ID ${id} not found.`);
+      }
+      throw new HttpErrors.InternalServerError(
+        'Failed to delete category: ' + error.message,
+      );
+    }
   }
 }

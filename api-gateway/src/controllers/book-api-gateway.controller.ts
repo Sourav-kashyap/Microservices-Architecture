@@ -5,6 +5,9 @@ import axios from 'axios';
 import {IBook} from '../interface/book-interface';
 import {IBookView} from '../interface/book-interface';
 import {authenticate, STRATEGY} from 'loopback4-authentication';
+import {handleError} from '../utils/errorHandle';
+import {authorize} from 'loopback4-authorization';
+import {PermissionKey} from '../utils/permissionsKeys';
 
 export class BookApiGatewayController {
   private bookBaseURL = 'http://localhost:3001';
@@ -14,17 +17,20 @@ export class BookApiGatewayController {
   constructor() {}
 
   /* Book End Points */
+
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.PostBook]})
   @post('/books')
   async createBook(@requestBody() book: IBook): Promise<IBookView | string> {
     try {
       const response = await axios.post(`${this.bookBaseURL}/books`, book);
       return response.data;
     } catch (error) {
-      return `Failed to create book: ${error.message}`;
+      return handleError(error, 'Failed to create book');
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @get('/books')
   async getAllBooks(): Promise<IBookView[] | string> {
     try {
@@ -77,10 +83,11 @@ export class BookApiGatewayController {
 
       return booksWithDetails;
     } catch (error) {
-      return `Failed to fetch books: ${error.message}`;
+      return handleError(error, 'Failed to fetch books');
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @get('/books/{id}')
   async getBookById(
     @param.path.string('id') id: string,
@@ -90,8 +97,10 @@ export class BookApiGatewayController {
       const book = response.data;
 
       if (!book) {
-        // Return a clear error message if the book is not found
-        return `Book with ID ${id} not found`;
+        return handleError(
+          {response: {status: 404, data: {message: 'Book not found'}}},
+          `Book with ID ${id} not found`,
+        );
       }
 
       const bookAuthorName = await axios.get(
@@ -117,11 +126,12 @@ export class BookApiGatewayController {
         },
       };
     } catch (error) {
-      return `Failed to fetch book with ID ${id}: ${error.message}`;
+      return handleError(error, `Failed to fetch book with ID ${id}`);
     }
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.UpdateBook]})
   @patch('/books/{id}')
   async updateBookById(
     @param.path.string('id') id: string,
@@ -134,11 +144,12 @@ export class BookApiGatewayController {
       );
       return response.data;
     } catch (error) {
-      return `Failed to update book with ID ${id}: ${error.message}`;
+      return handleError(error, `Failed to update book with ID ${id}`);
     }
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.DeleteBook]})
   @del('/books/{id}')
   async deleteBookById(
     @param.path.string('id') id: string,
@@ -147,7 +158,7 @@ export class BookApiGatewayController {
       const response = await axios.delete(`${this.bookBaseURL}/books/${id}`);
       return response.data;
     } catch (error) {
-      return `Failed to delete book with ID ${id}: ${error.message}`;
+      return handleError(error, `Failed to delete book with ID ${id}`);
     }
   }
 }

@@ -16,6 +16,7 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
 import {Author} from '../models';
 import {AuthorRepository} from '../repositories';
@@ -23,7 +24,7 @@ import {AuthorRepository} from '../repositories';
 export class AuthorController {
   constructor(
     @repository(AuthorRepository)
-    public authorRepository : AuthorRepository,
+    public authorRepository: AuthorRepository,
   ) {}
 
   @post('/authors')
@@ -37,14 +38,19 @@ export class AuthorController {
         'application/json': {
           schema: getModelSchemaRef(Author, {
             title: 'NewAuthor',
-            
           }),
         },
       },
     })
     author: Author,
   ): Promise<Author> {
-    return this.authorRepository.create(author);
+    try {
+      return await this.authorRepository.create(author);
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to create author: ' + error.message,
+      );
+    }
   }
 
   @get('/authors/count')
@@ -52,10 +58,14 @@ export class AuthorController {
     description: 'Author model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(Author) where?: Where<Author>,
-  ): Promise<Count> {
-    return this.authorRepository.count(where);
+  async count(@param.where(Author) where?: Where<Author>): Promise<Count> {
+    try {
+      return await this.authorRepository.count(where);
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to get author count: ' + error.message,
+      );
+    }
   }
 
   @get('/authors')
@@ -70,10 +80,18 @@ export class AuthorController {
       },
     },
   })
-  async find(
-    @param.filter(Author) filter?: Filter<Author>,
-  ): Promise<Author[]> {
-    return this.authorRepository.find(filter);
+  async find(@param.filter(Author) filter?: Filter<Author>): Promise<Author[]> {
+    try {
+      const authors = await this.authorRepository.find(filter);
+      if (authors.length === 0) {
+        throw new HttpErrors.NotFound('No authors found.');
+      }
+      return authors;
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to fetch authors: ' + error.message,
+      );
+    }
   }
 
   @patch('/authors')
@@ -92,7 +110,13 @@ export class AuthorController {
     author: Author,
     @param.where(Author) where?: Where<Author>,
   ): Promise<Count> {
-    return this.authorRepository.updateAll(author, where);
+    try {
+      return await this.authorRepository.updateAll(author, where);
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to update authors: ' + error.message,
+      );
+    }
   }
 
   @get('/authors/{id}')
@@ -106,9 +130,20 @@ export class AuthorController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(Author, {exclude: 'where'}) filter?: FilterExcludingWhere<Author>
+    @param.filter(Author, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Author>,
   ): Promise<Author> {
-    return this.authorRepository.findById(id, filter);
+    try {
+      const author = await this.authorRepository.findById(id, filter);
+      if (!author) {
+        throw new HttpErrors.NotFound(`Author with ID ${id} not found.`);
+      }
+      return author;
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to find the author: ' + error.message,
+      );
+    }
   }
 
   @patch('/authors/{id}')
@@ -126,7 +161,13 @@ export class AuthorController {
     })
     author: Author,
   ): Promise<void> {
-    await this.authorRepository.updateById(id, author);
+    try {
+      await this.authorRepository.updateById(id, author);
+    } catch (error) {
+      throw new HttpErrors.NotFound(
+        `Author with ID ${id} not found or failed to update: ` + error.message,
+      );
+    }
   }
 
   @put('/authors/{id}')
@@ -137,7 +178,13 @@ export class AuthorController {
     @param.path.string('id') id: string,
     @requestBody() author: Author,
   ): Promise<void> {
-    await this.authorRepository.replaceById(id, author);
+    try {
+      await this.authorRepository.replaceById(id, author);
+    } catch (error) {
+      throw new HttpErrors.NotFound(
+        `Author with ID ${id} not found or failed to replace: ` + error.message,
+      );
+    }
   }
 
   @del('/authors/{id}')
@@ -145,6 +192,12 @@ export class AuthorController {
     description: 'Author DELETE success',
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.authorRepository.deleteById(id);
+    try {
+      await this.authorRepository.deleteById(id);
+    } catch (error) {
+      throw new HttpErrors.NotFound(
+        `Author with ID ${id} not found or failed to delete: ` + error.message,
+      );
+    }
   }
 }
