@@ -1,18 +1,20 @@
-import {get, post, patch, put, del, requestBody, param} from '@loopback/rest';
+import {get, post, patch, del, requestBody, param} from '@loopback/rest';
 import axios from 'axios';
 
 /* Category interface */
 import {ICategory} from '../interface/category-interface';
 import {authenticate, STRATEGY} from 'loopback4-authentication';
+import {handleError} from '../utils/errorHandle';
 
 export class CategoryApiGatewayController {
   private categoryBaseURL = 'http://localhost:3003';
+
   constructor() {}
 
   /* Category End Points */
 
   @authenticate(STRATEGY.BEARER)
-  @post('/categorys')
+  @post('/categories')
   async createCategory(
     @requestBody() category: ICategory,
   ): Promise<ICategory | string> {
@@ -23,17 +25,17 @@ export class CategoryApiGatewayController {
       );
       return response.data;
     } catch (error) {
-      return `Failed to create category: ${error.message}`;
+      return handleError(error, 'Failed to create category');
     }
   }
 
   @get('/categories')
-  async getAllCategories(): Promise<ICategory | string> {
+  async getAllCategories(): Promise<ICategory[] | string> {
     try {
       const response = await axios.get(`${this.categoryBaseURL}/categories`);
       return response.data;
     } catch (error) {
-      return `Failed to get all categories: ${error.message}`;
+      return handleError(error, 'Failed to get all categories');
     }
   }
 
@@ -47,7 +49,7 @@ export class CategoryApiGatewayController {
       );
       return response.data;
     } catch (error) {
-      return `Failed to get category with id ${id}: ${error.message}`;
+      return handleError(error, `Failed to get category with ID ${id}`);
     }
   }
 
@@ -64,7 +66,7 @@ export class CategoryApiGatewayController {
       );
       return response.data;
     } catch (error) {
-      return `Failed to update category with id ${id}: ${error.message}`;
+      return handleError(error, `Failed to update category with ID ${id}`);
     }
   }
 
@@ -79,7 +81,7 @@ export class CategoryApiGatewayController {
       );
       return response.data;
     } catch (error) {
-      return `Failed to delete category with id ${id}: ${error.message}`;
+      return handleError(error, `Failed to delete category with ID ${id}`);
     }
   }
 }

@@ -17,16 +17,34 @@ export class AuthController {
   async signup(@requestBody() userData: Signup): Promise<Token> {
     try {
       const response = await axios.post(`${this.authBaseURL}/signup`, userData);
+
       const token: Token = response.data;
 
       if (!token) {
-        throw new HttpErrors.Unauthorized('token cannot be empty');
+        throw new HttpErrors.Unauthorized('Token cannot be empty.');
       }
 
       return token;
     } catch (error) {
-      console.error('Error during signup:', error.message);
-      throw new HttpErrors.InternalServerError('Failed to sign up');
+      if (error.response) {
+        console.error('Error during signup API call:', error.response.data);
+        throw new HttpErrors.Unauthorized(
+          `Signup failed: ${error.response.data.message || 'Unknown error'}`,
+        );
+      } else if (error.request) {
+        console.error(
+          'Error during signup: No response from the server',
+          error.request,
+        );
+        throw new HttpErrors.GatewayTimeout(
+          'Signup service is unavailable. Please try again later.',
+        );
+      } else {
+        console.error('Error during signup:', error.message);
+        throw new HttpErrors.InternalServerError(
+          'An unexpected error occurred during signup.',
+        );
+      }
     }
   }
 
@@ -38,16 +56,33 @@ export class AuthController {
         credentials,
       );
 
-      const token = response.data;
+      const token: Token = response.data;
 
       if (!token) {
-        throw new HttpErrors.Unauthorized('token cannot be empty');
+        throw new HttpErrors.Unauthorized('Token cannot be empty.');
       }
 
       return token;
     } catch (error) {
-      console.error('Error during login:', error.message);
-      throw new HttpErrors.InternalServerError('Failed to log in');
+      if (error.response) {
+        console.error('Error during login API call:', error.response.data);
+        throw new HttpErrors.Unauthorized(
+          `Login failed: ${error.response.data.message || 'Invalid credentials.'}`,
+        );
+      } else if (error.request) {
+        console.error(
+          'Error during login: No response from the server',
+          error.request,
+        );
+        throw new HttpErrors.GatewayTimeout(
+          'Login service is unavailable. Please try again later.',
+        );
+      } else {
+        console.error('Error during login:', error.message);
+        throw new HttpErrors.InternalServerError(
+          'An unexpected error occurred during login.',
+        );
+      }
     }
   }
 }

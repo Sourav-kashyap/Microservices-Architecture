@@ -16,6 +16,7 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
 import {Book} from '../models';
 import {BookRepository} from '../repositories';
@@ -43,7 +44,13 @@ export class BookController {
     })
     book: Book,
   ): Promise<Book> {
-    return this.bookRepository.create(book);
+    try {
+      return await this.bookRepository.create(book);
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to create a book: ' + error.message,
+      );
+    }
   }
 
   @get('/books/count')
@@ -52,7 +59,13 @@ export class BookController {
     content: {'application/json': {schema: CountSchema}},
   })
   async count(@param.where(Book) where?: Where<Book>): Promise<Count> {
-    return this.bookRepository.count(where);
+    try {
+      return await this.bookRepository.count(where);
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to get book count: ' + error.message,
+      );
+    }
   }
 
   @get('/books')
@@ -68,7 +81,17 @@ export class BookController {
     },
   })
   async find(@param.filter(Book) filter?: Filter<Book>): Promise<Book[]> {
-    return this.bookRepository.find(filter);
+    try {
+      const books = await this.bookRepository.find(filter);
+      if (books.length === 0) {
+        throw new HttpErrors.NotFound('No books found.');
+      }
+      return books;
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to fetch books: ' + error.message,
+      );
+    }
   }
 
   @patch('/books')
@@ -87,7 +110,13 @@ export class BookController {
     book: Book,
     @param.where(Book) where?: Where<Book>,
   ): Promise<Count> {
-    return this.bookRepository.updateAll(book, where);
+    try {
+      return await this.bookRepository.updateAll(book, where);
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to update books: ' + error.message,
+      );
+    }
   }
 
   @get('/books/{id}')
@@ -103,7 +132,17 @@ export class BookController {
     @param.path.string('id') id: string,
     @param.filter(Book, {exclude: 'where'}) filter?: FilterExcludingWhere<Book>,
   ): Promise<Book> {
-    return this.bookRepository.findById(id, filter);
+    try {
+      const book = await this.bookRepository.findById(id, filter);
+      if (!book) {
+        throw new HttpErrors.NotFound(`Book with ID ${id} not found.`);
+      }
+      return book;
+    } catch (error) {
+      throw new HttpErrors.InternalServerError(
+        'Failed to find the book: ' + error.message,
+      );
+    }
   }
 
   @patch('/books/{id}')
@@ -121,7 +160,13 @@ export class BookController {
     })
     book: Book,
   ): Promise<void> {
-    await this.bookRepository.updateById(id, book);
+    try {
+      await this.bookRepository.updateById(id, book);
+    } catch (error) {
+      throw new HttpErrors.NotFound(
+        `Book with ID ${id} not found or failed to update: ` + error.message,
+      );
+    }
   }
 
   @put('/books/{id}')
@@ -132,7 +177,13 @@ export class BookController {
     @param.path.string('id') id: string,
     @requestBody() book: Book,
   ): Promise<void> {
-    await this.bookRepository.replaceById(id, book);
+    try {
+      await this.bookRepository.replaceById(id, book);
+    } catch (error) {
+      throw new HttpErrors.NotFound(
+        `Book with ID ${id} not found or failed to replace: ` + error.message,
+      );
+    }
   }
 
   @del('/books/{id}')
@@ -140,6 +191,12 @@ export class BookController {
     description: 'Book DELETE success',
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.bookRepository.deleteById(id);
+    try {
+      await this.bookRepository.deleteById(id);
+    } catch (error) {
+      throw new HttpErrors.NotFound(
+        `Book with ID ${id} not found or failed to delete: ` + error.message,
+      );
+    }
   }
 }

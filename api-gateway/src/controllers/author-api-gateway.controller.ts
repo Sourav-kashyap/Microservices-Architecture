@@ -1,11 +1,13 @@
-import {get, post, patch, put, del, requestBody, param} from '@loopback/rest';
+import {get, post, patch, del, requestBody, param} from '@loopback/rest';
 import axios from 'axios';
 /* Author Interface */
 import {IAuthor} from '../interface/author-interface';
 import {authenticate, STRATEGY} from 'loopback4-authentication';
+import {handleError} from '../utils/errorHandle';
 
 export class AuthorApiGatewayController {
   private authorBaseURL = 'http://localhost:3002';
+
   constructor() {}
 
   /* Author End Points */
@@ -22,17 +24,17 @@ export class AuthorApiGatewayController {
       );
       return response.data;
     } catch (error) {
-      return `Failed to create author: ${error.message}`;
+      return handleError(error, 'Failed to create author');
     }
   }
 
   @get('/authors')
-  async getAllAuthors(): Promise<IAuthor | string> {
+  async getAllAuthors(): Promise<IAuthor[] | string> {
     try {
       const response = await axios.get(`${this.authorBaseURL}/authors`);
       return response.data;
     } catch (error) {
-      return `Failed to get all authors: ${error.message}`;
+      return handleError(error, 'Failed to get all authors');
     }
   }
 
@@ -44,7 +46,7 @@ export class AuthorApiGatewayController {
       const response = await axios.get(`${this.authorBaseURL}/authors/${id}`);
       return response.data;
     } catch (error) {
-      return `Failed to get author with id ${id}: ${error.message}`;
+      return handleError(error, `Failed to get author with ID ${id}`);
     }
   }
 
@@ -53,16 +55,15 @@ export class AuthorApiGatewayController {
   async updateAuthor(
     @param.path.string('id') id: string,
     @requestBody() author: IAuthor,
-  ) {
+  ): Promise<IAuthor | string> {
     try {
       const response = await axios.patch(
         `${this.authorBaseURL}/authors/${id}`,
         author,
       );
-
       return response.data;
     } catch (error) {
-      return `Failed to update author with id ${id}: ${error.message}`;
+      return handleError(error, `Failed to update author with ID ${id}`);
     }
   }
 
@@ -77,7 +78,7 @@ export class AuthorApiGatewayController {
       );
       return response.data;
     } catch (error) {
-      return `Failed to delete author with id ${id}: ${error.message}`;
+      return handleError(error, `Failed to delete author with ID ${id}`);
     }
   }
 }
