@@ -5,6 +5,8 @@ import axios from 'axios';
 import {ICategory} from '../interface/category-interface';
 import {authenticate, STRATEGY} from 'loopback4-authentication';
 import {handleError} from '../utils/errorHandle';
+import {authorize} from 'loopback4-authorization';
+import {PermissionKey} from '../utils/permissionsKeys';
 
 export class CategoryApiGatewayController {
   private categoryBaseURL = 'http://localhost:3003';
@@ -14,6 +16,7 @@ export class CategoryApiGatewayController {
   /* Category End Points */
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.PostCategory]})
   @post('/categories')
   async createCategory(
     @requestBody() category: ICategory,
@@ -29,6 +32,7 @@ export class CategoryApiGatewayController {
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @get('/categories')
   async getAllCategories(): Promise<ICategory[] | string> {
     try {
@@ -39,6 +43,7 @@ export class CategoryApiGatewayController {
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @get('/categories/{id}')
   async getCategoryById(
     @param.path.string('id') id: string,
@@ -54,6 +59,7 @@ export class CategoryApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.UpdateCategory]})
   @patch('/categories/{id}')
   async updateCategory(
     @param.path.string('id') id: string,
@@ -71,6 +77,7 @@ export class CategoryApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.DeleteCategory]})
   @del('/categories/{id}')
   async deleteCategory(
     @param.path.string('id') id: string,

@@ -4,6 +4,8 @@ import axios from 'axios';
 import {IAuthor} from '../interface/author-interface';
 import {authenticate, STRATEGY} from 'loopback4-authentication';
 import {handleError} from '../utils/errorHandle';
+import {authorize} from 'loopback4-authorization';
+import {PermissionKey} from '../utils/permissionsKeys';
 
 export class AuthorApiGatewayController {
   private authorBaseURL = 'http://localhost:3002';
@@ -13,6 +15,7 @@ export class AuthorApiGatewayController {
   /* Author End Points */
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.PostAuthor]})
   @post('/authors')
   async createAuthor(
     @requestBody() author: IAuthor,
@@ -28,6 +31,7 @@ export class AuthorApiGatewayController {
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @get('/authors')
   async getAllAuthors(): Promise<IAuthor[] | string> {
     try {
@@ -38,6 +42,7 @@ export class AuthorApiGatewayController {
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @get('/authors/{id}')
   async getAuthorById(
     @param.path.string('id') id: string,
@@ -51,6 +56,7 @@ export class AuthorApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.UpdateAuthor]})
   @patch('/authors/{id}')
   async updateAuthor(
     @param.path.string('id') id: string,
@@ -68,6 +74,7 @@ export class AuthorApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.DeleteAuthor]})
   @del('/authors/{id}')
   async deleteAuthor(
     @param.path.string('id') id: string,

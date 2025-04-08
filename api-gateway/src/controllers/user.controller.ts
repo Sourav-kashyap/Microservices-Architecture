@@ -4,6 +4,8 @@ import axios from 'axios';
 /* Book Interface */
 import {Signup} from '../interface/user-interface';
 import {authenticate, STRATEGY} from 'loopback4-authentication';
+import {authorize} from 'loopback4-authorization';
+import {PermissionKey} from '../utils/permissionsKeys';
 
 export class UserController {
   private userBaseURL = 'http://localhost:3004';
@@ -12,6 +14,7 @@ export class UserController {
 
   /* Auth End Points */
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.ViewUser]})
   @get('/users')
   async getAllUser(): Promise<Signup[]> {
     try {
@@ -36,6 +39,7 @@ export class UserController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.DeleteUser]})
   @del('/user/{id}')
   async deleteUserById(
     @param.path.string('id') id: string,

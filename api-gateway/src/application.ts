@@ -11,6 +11,7 @@ import path from 'path';
 import {MySequence} from './sequence';
 import {AuthenticationComponent, Strategies} from 'loopback4-authentication';
 import {BearerTokenVerifyProvider} from './provider/bearer-token-verify.provider';
+import {AuthorizationComponent} from 'loopback4-authorization';
 
 export {ApplicationConfig};
 
@@ -20,10 +21,15 @@ export class ApiGatewayApplication extends BootMixin(
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
+    //Authentication:
     this.component(AuthenticationComponent);
     this.bind(Strategies.Passport.BEARER_TOKEN_VERIFIER).toProvider(
       BearerTokenVerifyProvider,
     );
+
+    //Authorization:
+    this.bind('sf.userAuthorization.config').to({});
+    this.component(AuthorizationComponent);
 
     // Set up the custom sequence
     this.sequence(MySequence);

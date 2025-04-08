@@ -14,3 +14,12 @@ export interface Login {
 export interface Token {
   token: any;
 }
+
+export interface User {
+  id?: string;
+  username: string;
+  email: string;
+  password: string;
+  role: string;
+  permissions?: string[];
+}

@@ -6,6 +6,8 @@ import {IBook} from '../interface/book-interface';
 import {IBookView} from '../interface/book-interface';
 import {authenticate, STRATEGY} from 'loopback4-authentication';
 import {handleError} from '../utils/errorHandle';
+import {authorize} from 'loopback4-authorization';
+import {PermissionKey} from '../utils/permissionsKeys';
 
 export class BookApiGatewayController {
   private bookBaseURL = 'http://localhost:3001';
@@ -17,6 +19,7 @@ export class BookApiGatewayController {
   /* Book End Points */
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.PostBook]})
   @post('/books')
   async createBook(@requestBody() book: IBook): Promise<IBookView | string> {
     try {
@@ -27,6 +30,7 @@ export class BookApiGatewayController {
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @get('/books')
   async getAllBooks(): Promise<IBookView[] | string> {
     try {
@@ -83,6 +87,7 @@ export class BookApiGatewayController {
     }
   }
 
+  @authenticate(STRATEGY.BEARER)
   @get('/books/{id}')
   async getBookById(
     @param.path.string('id') id: string,
@@ -126,6 +131,7 @@ export class BookApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.UpdateBook]})
   @patch('/books/{id}')
   async updateBookById(
     @param.path.string('id') id: string,
@@ -143,6 +149,7 @@ export class BookApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.DeleteBook]})
   @del('/books/{id}')
   async deleteBookById(
     @param.path.string('id') id: string,

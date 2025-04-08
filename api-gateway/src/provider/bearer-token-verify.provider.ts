@@ -4,7 +4,8 @@ import {Provider} from '@loopback/core';
 import {HttpErrors} from '@loopback/rest';
 const jwt = require('jsonwebtoken');
 import {VerifyFunction} from 'loopback4-authentication';
-import {Signup} from '../interface/user-interface';
+import {User} from '../interface/user-interface';
+import {RolePermissions} from '../utils/permissionsMappling';
 
 export class BearerTokenVerifyProvider
   implements Provider<VerifyFunction.BearerFn>
@@ -25,13 +26,13 @@ export class BearerTokenVerifyProvider
           issuer: process.env.JWT_ISSUER,
         });
 
-        const user = decoded as Signup;
+        const user = decoded as User;
         if (!user) {
           throw new HttpErrors.Unauthorized(
             'Token is invalid or has missing data',
           );
         }
-
+        user.permissions = RolePermissions[user.role] || [];
         return user;
       } catch (error) {
         if (error instanceof jwt.JsonWebTokenError) {
