@@ -28,7 +28,7 @@ export class MySequence implements SequenceHandler {
       const args = await this.parseParams(request, route);
       request.body = args[args.length - 1];
       // Authenticate the request
-      const authUser: User = await this.authenticateRequest(request);
+      // const authUser: User = await this.authenticateRequest(request);
       const result = await this.invoke(route, args);
       this.send(response, result);
     } catch (err) {

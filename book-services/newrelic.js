@@ -3,19 +3,19 @@
 require('dotenv').config();
 
 exports.config = {
-  app_name: [process.env.NEW_RELIC_APP_NAME],
-  license_key: process.env.NEW_RELIC_LICENSE_KEY,
+  APP_NAME: [process.env.NEW_RELIC_APP_NAME],
+  LICENSE_KEY: process.env.NEW_RELIC_LICENSE_KEY,
   logging: {
     level: 'info',
   },
   host: 'collector.newrelic.com',
-  distributed_tracing: {
+  DISTRIBUTED_TRACING: {
     enabled: true,
   },
-  slow_sql: {
+  SLOW_SQL: {
     enabled: true,
   },
-  transaction_tracer: {
+  TRANSACTION_TRACER: {
     enabled: true,
   },
 };

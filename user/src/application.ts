@@ -9,11 +9,7 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
-import {
-  AuthenticationBindings,
-  AuthenticationComponent,
-} from 'loopback4-authentication';
-import {User} from './models';
+import {AuthenticationComponent} from 'loopback4-authentication';
 
 export {ApplicationConfig};
 
