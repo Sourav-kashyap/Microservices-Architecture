@@ -6,7 +6,7 @@ import {BookController} from '../../controllers';
 import {BookRepository} from '../../repositories';
 import {Book} from '../../models';
 
-describe('BookController', () => {
+describe('BookControllerTesting', () => {
   let bookController: BookController;
   let bookRepositoryStub: sinon.SinonStubbedInstance<BookRepository>;
 

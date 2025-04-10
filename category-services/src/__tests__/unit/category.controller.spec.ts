@@ -78,7 +78,7 @@ describe('CategoryControllerTesting', () => {
 
   it('should replace a category by id', async () => {
     const id = 'c1';
-    const category = new Category({categoryId: id, name: 'Replaced Category'});
+    const category = new Category({name: 'Replaced Category'});
     categoriesRepositoryStub.replaceById.resolves();
     await categoryController.replaceById(id, category);
     sinon.assert.calledOnce(categoriesRepositoryStub.replaceById);

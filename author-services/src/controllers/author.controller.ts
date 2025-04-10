@@ -107,7 +107,7 @@ export class AuthorController {
         },
       },
     })
-    author: Author,
+    author: Partial<Author>,
     @param.where(Author) where?: Where<Author>,
   ): Promise<Count> {
     try {
