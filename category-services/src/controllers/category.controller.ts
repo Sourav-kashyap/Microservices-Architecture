@@ -164,7 +164,7 @@ export class CategoryController {
         },
       },
     })
-    category: Category,
+    category: Partial<Category>,
   ): Promise<void> {
     try {
       await this.categoryRepository.updateById(id, category);
