@@ -5,7 +5,7 @@ import {AuthorRepository} from '../../repositories';
 import {Author} from '../../models';
 import {Count} from '@loopback/repository';
 
-describe('AuthorController', () => {
+describe('AuthorControllerTesting', () => {
   let authorController: AuthorController;
   let authorRepositoryStub: sinon.SinonStubbedInstance<AuthorRepository>;
 
