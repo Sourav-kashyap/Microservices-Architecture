@@ -4,7 +4,7 @@ import axios from 'axios';
 import {CategoryApiGatewayController} from '../../controllers/category-api-gateway.controller';
 import {ICategory} from '../../interface/category-interface';
 
-describe('CategoryApiGatewayController', () => {
+describe('CategoryApiGatewayControllerTesting', () => {
   let controller: CategoryApiGatewayController;
 
   const mockCategory: ICategory = {

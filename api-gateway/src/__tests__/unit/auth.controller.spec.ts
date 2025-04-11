@@ -5,7 +5,7 @@ import axios from 'axios';
 import {AuthController} from '../../controllers/auth.controller';
 import {Signup, Login, Token} from '../../interface/user-interface';
 
-describe('AuthController', () => {
+describe('AuthControllerTesting', () => {
   let authController: AuthController;
 
   const dummyToken: Token = {
