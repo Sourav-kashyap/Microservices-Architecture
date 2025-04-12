@@ -31,6 +31,7 @@ export class BookApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.ViewBook]})
   @get('/books')
   async getAllBooks(): Promise<IBookView[] | string> {
     try {
@@ -88,6 +89,7 @@ export class BookApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.ViewBook]})
   @get('/books/{id}')
   async getBookById(
     @param.path.string('id') id: string,

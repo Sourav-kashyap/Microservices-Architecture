@@ -33,6 +33,7 @@ export class CategoryApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.ViewCategory]})
   @get('/categories')
   async getAllCategories(): Promise<ICategory[] | string> {
     try {
@@ -44,6 +45,7 @@ export class CategoryApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.ViewCategory]})
   @get('/categories/{id}')
   async getCategoryById(
     @param.path.string('id') id: string,
