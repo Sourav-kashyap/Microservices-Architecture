@@ -32,6 +32,7 @@ export class AuthorApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.ViewAuthor]})
   @get('/authors')
   async getAllAuthors(): Promise<IAuthor[] | string> {
     try {
@@ -43,6 +44,7 @@ export class AuthorApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.ViewAuthor]})
   @get('/authors/{id}')
   async getAuthorById(
     @param.path.string('id') id: string,

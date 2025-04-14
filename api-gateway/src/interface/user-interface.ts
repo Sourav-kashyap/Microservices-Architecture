@@ -12,7 +12,7 @@ export interface Login {
 }
 
 export interface Token {
-  token: any;
+  token: string;
 }
 
 export interface User {

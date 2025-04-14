@@ -40,7 +40,7 @@ export class MySequence implements SequenceHandler {
 
       if (authUser) {
         const isAccessAllowed: boolean = await this.checkAuthorization(
-          authUser?.permissions || [],
+          authUser?.permissions ?? [],
           request,
         );
         if (!isAccessAllowed) {

@@ -1,16 +1,17 @@
-import {AuthenticationBindings} from 'loopback4-authentication';
-import {repository, Getter} from '@loopback/repository';
+// import {AuthenticationBindings} from 'loopback4-authentication';
+import {repository} from '@loopback/repository';
+// import {Getter} from '@loopback/repository';
 import {get, del, HttpErrors, response, param} from '@loopback/rest';
 import {User} from '../models/user.model';
 import {UserRepository} from '../repositories/user.repository';
-import {inject} from '@loopback/core';
+// import {inject} from '@loopback/core';
 
 export class UserController {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
-    @inject.getter(AuthenticationBindings.CURRENT_USER)
-    private readonly getAuthenticateUser: Getter<User>,
+    // @inject.getter(AuthenticationBindings.CURRENT_USER)
+    // private readonly getAuthenticateUser: Getter<User>,
   ) {}
 
   @get('/users')

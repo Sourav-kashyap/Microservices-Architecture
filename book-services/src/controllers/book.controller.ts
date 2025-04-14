@@ -158,7 +158,7 @@ export class BookController {
         },
       },
     })
-    book: Book,
+    book: Partial<Book>,
   ): Promise<void> {
     try {
       await this.bookRepository.updateById(id, book);

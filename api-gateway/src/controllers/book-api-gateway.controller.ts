@@ -21,7 +21,7 @@ export class BookApiGatewayController {
   @authenticate(STRATEGY.BEARER)
   @authorize({permissions: [PermissionKey.PostBook]})
   @post('/books')
-  async createBook(@requestBody() book: IBook): Promise<IBookView | string> {
+  async createBook(@requestBody() book: IBook): Promise<IBook | string> {
     try {
       const response = await axios.post(`${this.bookBaseURL}/books`, book);
       return response.data;
@@ -31,6 +31,7 @@ export class BookApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.ViewBook]})
   @get('/books')
   async getAllBooks(): Promise<IBookView[] | string> {
     try {
@@ -88,6 +89,7 @@ export class BookApiGatewayController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.ViewBook]})
   @get('/books/{id}')
   async getBookById(
     @param.path.string('id') id: string,
@@ -118,11 +120,11 @@ export class BookApiGatewayController {
         publishDate: book.publishDate,
         author: {
           authorId: book.authorId,
-          authorName: bookAuthorName.data.name,
+          authorName: bookAuthorName.data.authorName,
         },
         category: {
           categoryId: book.categoryId,
-          categoryName: bookCategoryName.data.name,
+          categoryName: bookCategoryName.data.categoryName,
         },
       };
     } catch (error) {
@@ -135,8 +137,8 @@ export class BookApiGatewayController {
   @patch('/books/{id}')
   async updateBookById(
     @param.path.string('id') id: string,
-    @requestBody() book: IBookView,
-  ) {
+    @requestBody() book: IBook,
+  ): Promise<IBook | string> {
     try {
       const response = await axios.patch(
         `${this.bookBaseURL}/books/${id}`,

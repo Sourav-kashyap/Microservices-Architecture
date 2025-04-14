@@ -1,4 +1,4 @@
-import {get, requestBody, HttpErrors, param, del} from '@loopback/rest';
+import {get, HttpErrors, param, del} from '@loopback/rest';
 import axios from 'axios';
 
 /* Book Interface */
